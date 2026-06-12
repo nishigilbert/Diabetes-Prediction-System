@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Diabetes Predict</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <!-- Navigation Bar - Fixed at Top -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="{{ url_for('index') }}" class="brand-link">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>DiabetesPredict</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('main') }}" class="nav-link">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </a>
+                <a href="{{ url_for('profile') }}" class="nav-link active">
+                    <i class="fas fa-user"></i> Profile
+                </a>
+                <a href="{{ url_for('logout') }}" class="nav-link logout-link">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="dashboard-container">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>My <span class="username">Profile</span></h1>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h2>{{ user[0] }}</h2>
+                    <p>Member since {{ user[2] if user[2] else 'N/A' }}</p>
+                </div>
+
+                <div class="profile-info">
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-user"></i> Username
+                        </div>
+                        <div class="info-value">{{ user[0] }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-envelope"></i> Email Address
+                        </div>
+                        <div class="info-value">{{ user[1] }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-calendar-alt"></i> Member Since
+                        </div>
+                        <div class="info-value">{{ user[2] if user[2] else 'N/A' }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">
+                            <i class="fas fa-shield-alt"></i> Account Status
+                        </div>
+                        <div class="info-value">
+                            <span class="status-badge active">
+                                <i class="fas fa-check-circle"></i> Active
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-actions">
+                    <a href="{{ url_for('main') }}" class="btn-predict">
+                        <i class="fas fa-chart-line"></i> Go to Dashboard
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="btn-reset">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+    </div>
+
+    <style>
+        /* Profile Page Specific Styles */
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .profile-header {
+            margin-bottom: 30px;
+        }
+
+        .profile-avatar i {
+            font-size: 5rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .profile-header h2 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-header p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .profile-info {
+            text-align: left;
+            margin: 30px 0;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            width: 140px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .info-label i {
+            color: #667eea;
+            width: 25px;
+            margin-right: 8px;
+        }
+
+        .info-value {
+            flex: 1;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-badge i {
+            font-size: 0.8rem;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .profile-actions .btn-predict,
+        .profile-actions .btn-reset {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .profile-actions .btn-predict {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .profile-actions .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .profile-actions .btn-reset {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .profile-actions .btn-reset:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .profile-stats {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .stat-card-small {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card-small:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card-small i {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-card-small h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-card-small p {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .profile-card {
+                margin: 20px;
+                padding: 25px;
+            }
+
+            .info-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .info-label {
+                width: 100%;
+            }
+
+            .profile-actions {
+                flex-direction: column;
+            }
+
+            .profile-actions .btn-predict,
+            .profile-actions .btn-reset {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                margin: 0 20px;
+            }
+
+            .stat-card-small {
+                padding: 15px;
+            }
+        }
+    </style>
+</body>
+</html>

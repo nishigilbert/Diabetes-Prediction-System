@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Diabetes Predict</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="dashboard-page">
+    <!-- Navigation Bar - Fixed at Top -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="{{ url_for('index') }}" class="brand-link">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>DiabetesPredict</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+                <a href="{{ url_for('profile') }}" class="nav-link">
+                    <i class="fas fa-user"></i> Profile
+                </a>
+                <a href="{{ url_for('logout') }}" class="nav-link logout-link">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="dashboard-container">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1>Welcome, <span class="username">{{ session.username }}</span>!</h1>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <i class="fas fa-{% if category == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% if result %}
+            <div class="result-card result-{{ result_class }} animate-slide">
+                <div class="result-icon">
+                    <i class="fas {{ icon if icon else 'fa-chart-line' }}"></i>
+                </div>
+                <div class="result-content">
+                    <h3>{{ result }}</h3>
+                    <p class="confidence">Confidence: <strong>{{ confidence }}</strong></p>
+                    {% if risk_level %}
+                    <div class="risk-factors">
+                        <strong>Risk Factors Detected:</strong>
+                        <ul>
+                            {% for factor in risk_factors %}
+                            <li><i class="fas fa-exclamation-circle"></i> {{ factor }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    {% if advice %}
+                    <p class="advice">{{ advice }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="prediction-card">
+                <form method="POST" action="{{ url_for('main') }}" class="prediction-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="gender">
+                                <i class="fas fa-venus-mars"></i> Gender
+                            </label>
+                            <select id="gender" name="gender" required>
+                                <option value="0" {% if form_data and form_data.gender == '0' %}selected{% endif %}>Female</option>
+                                <option value="1" {% if form_data and form_data.gender == '1' %}selected{% endif %}>Male</option>
+                                <option value="2" {% if form_data and form_data.gender == '2' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        
+            <div class="form-group">
+                <label for="age">
+                    <i class="fas fa-calendar-alt"></i> Age (years)
+                </label>
+                <input type="text" id="age" name="age"
+                    value="{{ form_data.age if form_data else '' }}"
+                    placeholder="e.g., 35" required>
+            </div>
+                        
+                        <div class="form-group">
+                            <label for="hypertension">
+                                <i class="fas fa-heart"></i> Hypertension
+                            </label>
+                            <select id="hypertension" name="hypertension" required>
+                                <option value="0" {% if form_data and form_data.hypertension == '0' %}selected{% endif %}>No</option>
+                                <option value="1" {% if form_data and form_data.hypertension == '1' %}selected{% endif %}>Yes</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="heart_disease">
+                                <i class="fas fa-heartbeat"></i> Heart Disease
+                            </label>
+                            <select id="heart_disease" name="heart_disease" required>
+                                <option value="0" {% if form_data and form_data.heart_disease == '0' %}selected{% endif %}>No</option>
+                                <option value="1" {% if form_data and form_data.heart_disease == '1' %}selected{% endif %}>Yes</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="smoking_history">
+                                <i class="fas fa-smoking"></i> Smoking History
+                            </label>
+                            <select id="smoking_history" name="smoking_history" required>
+                                <option value="0" {% if form_data and form_data.smoking_history == '0' %}selected{% endif %}>Never</option>
+                                <option value="1" {% if form_data and form_data.smoking_history == '1' %}selected{% endif %}>Former</option>
+                                <option value="2" {% if form_data and form_data.smoking_history == '2' %}selected{% endif %}>Current</option>
+                                <option value="3" {% if form_data and form_data.smoking_history == '3' %}selected{% endif %}>Not Current</option>
+                                <option value="4" {% if form_data and form_data.smoking_history == '4' %}selected{% endif %}>Ever</option>
+                                <option value="5" {% if form_data and form_data.smoking_history == '5' %}selected{% endif %}>No Info</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bmi">
+                                <i class="fas fa-chart-line"></i> BMI (kg/m²)
+                            </label>
+                        <input type="text" id="bmi" name="bmi"
+                            value="{{ form_data.bmi if form_data else '' }}" 
+                            placeholder="e.g., 22.5" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="HbA1c_level">
+                                <i class="fas fa-tint"></i> HbA1c Level (%)
+                            </label>
+                            <input type="text" id="HbA1c_level" name="HbA1c_level"
+                                value="{{ form_data.HbA1c_level if form_data else '' }}" 
+                                placeholder="e.g., 5.5" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="blood_glucose_level">
+                                <i class="fas fa-syringe"></i> Blood Glucose Level (mg/dL)
+                            </label>
+                            <input type="text" id="blood_glucose_level" name="blood_glucose_level"
+                                value="{{ form_data.blood_glucose_level if form_data else '' }}" placeholder="e.g., 95" required>
+                        </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-predict">
+                            <i class="fas fa-chart-line"></i> Predict Diabetes Risk
+                        </button>
+                        <button type="reset" class="btn-reset">
+                            <i class="fas fa-undo"></i> Reset Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    <script>
+        // Form reset confirmation
+        document.querySelector('.btn-reset').addEventListener('click', function(e) {
+            if(confirm('Are you sure you want to reset all form fields?')) {
+                document.querySelector('.prediction-form').reset();
+            } else {
+                e.preventDefault();
+            }
+        });
+        
+        // Input validation for numeric fields
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', function() {
+                if(this.value < this.min) this.value = this.min;
+                if(this.value > this.max) this.value = this.max;
+            });
+        });
+    </script>
+</body>
+</html>
